@@ -19,7 +19,7 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      description: 在窄门餐眼 App「设置 → 连接 AI 智能体」中生成 Skill Token，形如 sk_xxxxxx
+      description: 在窄门餐眼 App「我的 → 关于我们 → Token 管理」中生成 Skill Token，形如 sk_xxxxxx
 
   schemas:
     SuccessResponse:
@@ -184,6 +184,22 @@ paths:
                 address:
                   type: string
                   maxLength: 64
+                target_type:
+                  type: string
+                  enum: [Brand, Affiliate, Supplier, Other]
+                  description: 身份类型：Brand 品牌方 / Affiliate 加盟商 / Supplier 供应商 / Other 其他
+                target_slug:
+                  type: string
+                  description: 关联品牌或供应链的 slug
+                target_logo:
+                  type: string
+                  description: 关联品牌 logo URL
+                show_status:
+                  type: boolean
+                  description: 是否公开展示名片
+                view_condition:
+                  type: string
+                  description: 查看名片的条件
       responses:
         '200':
           description: 申请已提交，等待审核
@@ -235,8 +251,9 @@ paths:
                             items:
                               type: object
                               properties:
-                                user_id:
+                                card_slug:
                                   type: string
+                                  description: 名片唯一标识，仅用于发起交换请求，不得向用户展示
                                 name:
                                   type: string
                                 title:
@@ -251,8 +268,8 @@ paths:
       operationId: exchange_card
       summary: 发起名片交换
       description: >
-        向指定用户发起名片交换请求。
-        target_user_id 从搜索结果的 user_id 字段获取。
+        向指定名片发起交换请求。
+        card_slug 从搜索结果的 card_slug 字段获取。
         配额：已认证品牌方/加盟商/供应商每日 10 次，SVIP 每日 50 次，VIP 每日 1 次，其他用户累计 5 次。
         返回 remaining 表示剩余次数。7 天无回应可再次投递。
         执行前必须先向用户确认。
@@ -262,11 +279,11 @@ paths:
           application/json:
             schema:
               type: object
-              required: [target_user_id]
+              required: [card_slug]
               properties:
-                target_user_id:
+                card_slug:
                   type: string
-                  description: 对方用户 ID
+                  description: 目标名片唯一标识，从搜索结果的 card_slug 字段获取
                 reason:
                   type: string
                   maxLength: 256
@@ -341,8 +358,9 @@ paths:
                                 from_user:
                                   type: object
                                   properties:
-                                    user_id:
+                                    card_slug:
                                       type: string
+                                      description: 内部标识，不得向用户展示
                                     name:
                                       type: string
                                     title:
@@ -408,8 +426,9 @@ paths:
                                 to_user:
                                   type: object
                                   properties:
-                                    user_id:
+                                    card_slug:
                                       type: string
+                                      description: 内部标识，不得向用户展示
                                     name:
                                       type: string
                                     title:
