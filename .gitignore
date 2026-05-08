@@ -43,3 +43,4 @@ logs/
 node_modules/
 __MACOSX
 
+ai*
