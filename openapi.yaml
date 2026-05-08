@@ -244,9 +244,7 @@ paths:
                       data:
                         type: object
                         properties:
-                          total:
-                            type: integer
-                          list:
+                          records:
                             type: array
                             items:
                               type: object
@@ -256,12 +254,53 @@ paths:
                                   description: 名片唯一标识，仅用于发起交换请求，不得向用户展示
                                 name:
                                   type: string
+                                cover:
+                                  type: string
+                                  description: 头像图片
                                 title:
                                   type: string
+                                  description: 职位
                                 company:
                                   type: string
-                                avatar:
+                                intro:
                                   type: string
+                                  description: 个人简介
+                                targetType:
+                                  type: string
+                                  description: 身份类型
+                                targetName:
+                                  type: string
+                                  description: 关联品牌/机构名称
+                                isAuth:
+                                  type: boolean
+                                  description: 是否已认证
+                                isMine:
+                                  type: boolean
+                                  description: 是否是自己的名片
+                                isZmBro:
+                                  type: boolean
+                                  description: 是否窄门兄弟
+                                tagList:
+                                  type: array
+                                  items:
+                                    type: string
+                                  description: 标签列表
+                                latestVisitDay:
+                                  type: string
+                                  description: 最近活跃日期
+                                sendStatus:
+                                  type: integer
+                                  description: 0 表示已可查看联系方式（已交换/已收到分享/对方已投递）
+                                phone:
+                                  type: string
+                                  description: >
+                                    手机号。自己的名片、对方无查看门槛、或 sendStatus=0 时返回真实值；否则返回空字符串
+                                wechat:
+                                  type: string
+                                  description: 微信号，可见规则同 phone
+                          hasNext:
+                            type: boolean
+                            description: 是否有下一页
 
   /v1/card/exchange:
     post:
@@ -367,11 +406,27 @@ paths:
                                       type: string
                                     company:
                                       type: string
+                                    avatar:
+                                      type: string
+                                      description: 对方头像图片
+                                    phone:
+                                      type: string
+                                      description: >
+                                        对方手机号。收到投递请求时始终返回，无论对方是否公开。
+                                    wechat:
+                                      type: string
+                                      description: 对方微信号，若对方填写则返回
+                                    email:
+                                      type: string
+                                      description: 对方邮箱，若对方填写则返回
                                 status:
                                   type: string
                                   enum: [pending, accepted, rejected]
                                 reason:
                                   type: string
+                                latest_visit_day:
+                                  type: string
+                                  description: 对方最近活跃日期
                                 created_at:
                                   type: string
 
@@ -435,6 +490,20 @@ paths:
                                       type: string
                                     company:
                                       type: string
+                                    avatar:
+                                      type: string
+                                      description: 对方头像图片
+                                    phone:
+                                      type: string
+                                      description: >
+                                        对方手机号。请求已被接受（status=accepted）时始终返回，无论对方是否公开。
+                                        status=pending 或 rejected 时为 null。
+                                    wechat:
+                                      type: string
+                                      description: 对方微信号，status=accepted 时若对方填写则返回
+                                    email:
+                                      type: string
+                                      description: 对方邮箱，status=accepted 时若对方填写则返回
                                 status:
                                   type: string
                                   enum: [pending, accepted, rejected]
