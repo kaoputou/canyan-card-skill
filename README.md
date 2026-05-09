@@ -37,6 +37,8 @@
 
 > Token 随时可在 App 内撤销，撤销后所有 Skill 操作立即失效，重新生成即可恢复。
 
+> **安全提示：Skill Token 是你的个人凭证，请勿转发或分享给任何人。** Token 一旦泄露，他人即可以你的身份操作名片系统。若窄门餐眼官方发现 Token 出现在公开渠道或被异常使用，将直接将其废弃，造成的一切后果由持有者自行承担。如发现 Token 已泄露，请立即在 App 内撤销并重新生成。
+
 ### 第二步：安装到 AI 智能体
 
 将以下提示词复制给你的 AI 智能体（Claude Code、Codex、Cursor、Windsurf、GitHub Copilot、OpenClaw（小龙虾）、Trae 等），它会自动完成安装：
