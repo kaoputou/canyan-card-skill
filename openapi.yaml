@@ -206,7 +206,92 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          card_slug:
+                            type: string
+                            description: 内部标识，不得向用户展示，仅用于后续接口调用
+                          status:
+                            type: string
+                            example: pending
+                          message:
+                            type: string
+                            description: 固定返回审核提示语，直接展示给用户
+
+  /v1/card/search-target:
+    get:
+      operationId: search_target
+      summary: 搜索可关联企业
+      description: >
+        创建名片时，按企业名称搜索已收录的品牌方、供应商、服务商或加盟商候选企业。
+        找到合适的企业后，将返回结果中的 targetSlug、targetType 传给 create_card 接口。
+        此接口只负责查询，不会修改任何名片数据。
+      parameters:
+        - name: search
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 企业名称关键词，不能为空
+        - name: target_type
+          in: query
+          required: true
+          schema:
+            type: integer
+            enum: [1, 2, 3, 4]
+          description: 企业类型：1 供应商 / 2 品牌方 / 3 服务商 / 4 加盟商（加盟商底层复用品牌搜索）
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            default: 8
+            maximum: 20
+          description: 返回条数，默认 8，最大 20
+        - name: full_match
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+            default: 0
+          description: 0 模糊匹配（默认）/ 1 精确匹配
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          records:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                targetType:
+                                  type: integer
+                                  description: 企业类型，见 target_type 枚举
+                                targetSlug:
+                                  type: string
+                                  description: 企业唯一标识，用于 create_card 的 target_slug 字段
+                                targetName:
+                                  type: string
+                                  description: 企业名称
+                          pageSize:
+                            type: integer
+                            description: 实际生效的返回上限
+                          fullMatch:
+                            type: boolean
+                            description: 当前查询是否按精确匹配执行
 
   /v1/card/search:
     get:
