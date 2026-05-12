@@ -35,7 +35,7 @@
 3. 点击「生成并复制 Token」
 4. 复制返回的 Token（形如 `sk_xxxxxx`）——**明文只显示一次，请立即保存**
 
-![如何获取 Token](how_to_find_skill_token.png)
+![如何获取 Token](https://gate.kp-static.com/how_to_find_skill_token.png)
 
 > Token 随时可在 App 内撤销，撤销后所有 Skill 操作立即失效，重新生成即可恢复。
 
