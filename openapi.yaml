@@ -89,7 +89,7 @@ paths:
                           status:
                             type: string
                             enum: [none, pending, approved, rejected]
-                            description: none 未创建 / pending 审核中 / approved 已通过 / rejected 已拒绝
+                            description: none 未认证 / pending 审核中 / approved 已通过 / rejected 已拒绝
 
     put:
       operationId: update_card
@@ -185,9 +185,9 @@ paths:
                   type: string
                   maxLength: 64
                 target_type:
-                  type: string
-                  enum: [Brand, Affiliate, Supplier, Other]
-                  description: 身份类型：Brand 品牌方 / Affiliate 加盟商 / Supplier 供应商 / Other 其他
+                  type: integer
+                  enum: [1, 2, 3, 4]
+                  description: 身份类型：1 供应商 / 2 品牌方 / 3 服务商（其他）/ 4 加盟商
                 target_slug:
                   type: string
                   description: 关联品牌或供应链的 slug
@@ -353,14 +353,8 @@ paths:
     get:
       operationId: get_received_cards
       summary: 收到的名片请求
-      description: 查看别人发给自己的名片交换请求列表。
+      description: 查看别人发给自己的名片交换请求列表。仅返回待处理（pending）记录。
       parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [all, pending, accepted, rejected]
-            default: all
         - name: page
           in: query
           schema:
