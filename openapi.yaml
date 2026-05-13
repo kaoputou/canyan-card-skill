@@ -209,6 +209,9 @@ paths:
         创建名片时，按企业名称搜索已收录的品牌方、供应商、服务商或加盟商候选企业。
         找到合适的企业后，将返回结果中的 targetSlug、targetType 传给 create_card 接口。
         此接口只负责查询，不会修改任何名片数据。
+        严禁把它当作用户日常“搜名片 / 找同行 / 搜某公司的人 / 搜职位关键词”的搜索接口。
+        只要用户在对话中明确提到“搜索 / 搜一下 / 找找 / 查一下”，都不能调用本接口；
+        这些场景一律使用 /v1/card/search（operationId: search_cards）。
       parameters:
         - name: search
           in: query
@@ -275,7 +278,11 @@ paths:
     get:
       operationId: search_cards
       summary: 搜索名片
-      description: 搜索餐饮行业名片。只返回审核通过的主名片，每个用户最多展示一张主名片。
+      description: >
+        搜索餐饮行业名片。只返回审核通过的主名片，每个用户最多展示一张主名片。
+        凡是用户在对话中表达“找人、找同行、搜某公司的人、搜职位、搜业务关键词、看看有哪些名片”
+        等意图，都应优先使用本接口，而不是 /v1/card/search-target。
+        只要用户明确提到“搜索 / 搜一下 / 找找 / 查一下”，也统一落到本接口。
       parameters:
         - name: keyword
           in: query
