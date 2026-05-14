@@ -1,0 +1,149 @@
+cases:
+  - id: no-internal-ids-in-reply
+    description: card_slug、request_id 等内部字段不得展示给用户
+    messages:
+      - role: user
+        content: "查一下我的名片"
+      - role: tool
+        content: |
+          {
+            "card_slug": "abc123",
+            "name": "王军",
+            "position": "采购总监",
+            "status": "approved"
+          }
+    criteria:
+      - 回复中不出现 "abc123" 或 "card_slug"
+      - 展示姓名、职位等可读字段
+
+  - id: audit-status-in-chinese
+    description: 审核状态必须翻译为中文，不展示原始英文值
+    messages:
+      - role: user
+        content: "我的名片审核状态怎么样"
+      - role: tool
+        content: '{"status": "pending", "name": "王军"}'
+    criteria:
+      - 展示"审核中（约 1-3 个工作日）"
+      - 不展示原始值 "pending"
+
+  - id: audit-status-rejected-with-guidance
+    description: 状态为 rejected 时提示可修改后重新提交
+    messages:
+      - role: user
+        content: "审核过了吗"
+      - role: tool
+        content: '{"status": "rejected"}'
+    criteria:
+      - 展示"已拒绝"
+      - 提示用户可修改后重新提交
+      - 不展示 "rejected"
+
+  - id: mobile-visible-show-directly
+    description: search_cards 返回 mobile 有值时直接展示，不引导投递
+    messages:
+      - role: user
+        content: "帮我找一下做冷链的王五"
+      - role: tool
+        content: |
+          {
+            "cards": [
+              {
+                "name": "王五",
+                "position": "总监",
+                "company": "XX公司",
+                "mobile": "13812345678",
+                "wechat": ""
+              }
+            ],
+            "hasNext": false
+          }
+    criteria:
+      - 直接展示电话 13812345678
+      - 不引导用户向王五发投递请求
+      - wechat 为空字符串时不展示微信一项
+
+  - id: mobile-empty-pending-tell-user-to-wait
+    description: 自己投递后对方未接受时，mobile 为空，告知等待
+    messages:
+      - role: user
+        content: "李明接受我的申请了吗，他电话是多少"
+      - role: tool
+        content: |
+          {
+            "requests": [
+              {
+                "name": "李明",
+                "status": "pending",
+                "mobile": "",
+                "wechat": ""
+              }
+            ]
+          }
+    criteria:
+      - 告知对方尚未接受
+      - 告知"等对方接受后可查看联系方式"
+      - 不展示空号码
+
+  - id: received-request-always-show-contact
+    description: get_received_cards 返回的 mobile 始终展示，无需投递
+    messages:
+      - role: user
+        content: "有人加我名片吗，他电话是多少"
+      - role: tool
+        content: |
+          {
+            "requests": [
+              {
+                "name": "张三",
+                "position": "采购经理",
+                "company": "XX品牌",
+                "mobile": "13987654321",
+                "wechat": "zhangsan123",
+                "request_id": "req_abc",
+                "message": "想了解合作"
+              }
+            ]
+          }
+    criteria:
+      - 展示张三的联系电话 13987654321
+      - 展示微信 zhangsan123
+      - 不展示 request_id 值 "req_abc"
+
+  - id: search-has-next-notify-user
+    description: search_cards 返回 hasNext=true 时主动告知有更多结果
+    messages:
+      - role: user
+        content: "搜一下做冷链的"
+      - role: tool
+        content: |
+          {
+            "cards": [{"name": "A"}, {"name": "B"}],
+            "hasNext": true,
+            "total": 20
+          }
+    criteria:
+      - 告知当前展示前 N 条
+      - 告知用户如需查看更多请告诉我
+      - 不默默截断
+
+  - id: share-only-request-id-empty
+    description: request_id 为空字符串的记录是纯分享，不可调 respond_to_request
+    messages:
+      - role: user
+        content: "处理一下收到的名片请求"
+      - role: tool
+        content: |
+          {
+            "requests": [
+              {
+                "name": "张三",
+                "request_id": "",
+                "mobile": "13812345678"
+              }
+            ]
+          }
+    criteria:
+      - 说明"对方直接分享了名片"
+      - 不调用 respond_to_request
+      - 展示联系方式

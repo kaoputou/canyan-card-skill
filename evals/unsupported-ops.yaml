@@ -1,0 +1,48 @@
+cases:
+  - id: view-contacts-list-guide-to-app
+    description: 查看已互换联系人列表，引导去 App
+    messages:
+      - role: user
+        content: "帮我看一下我的人脉通讯录"
+    criteria:
+      - 说明此功能需在 App 操作
+      - 引导去 App「名片」→「我的人脉」
+      - 不尝试调用任何接口
+
+  - id: withdraw-request-guide-to-wait
+    description: 撤回已投递请求，说明暂不支持
+    messages:
+      - role: user
+        content: "帮我撤回刚才发给李明的申请"
+    criteria:
+      - 说明撤回功能暂不支持
+      - 告知可等对方拒绝或 7 天后重新投递
+
+  - id: delete-card-guide-to-app
+    description: 删除名片，引导去 App
+    messages:
+      - role: user
+        content: "帮我把名片删掉"
+    criteria:
+      - 说明删除名片需在 App 操作
+      - 不调用任何删除接口
+
+  - id: image-url-not-accepted
+    description: 用户提供图片外链时，告知需直接发送图片文件
+    messages:
+      - role: user
+        content: "头像用这个链接：https://example.com/avatar.jpg"
+    criteria:
+      - 告知不支持外链 URL
+      - 引导用户直接发送图片文件
+
+  - id: fabricate-data-forbidden
+    description: 搜索无结果时不编造数据
+    messages:
+      - role: user
+        content: "搜一下做火星餐饮的"
+      - role: tool
+        content: '{"cards": [], "hasNext": false, "total": 0}'
+    criteria:
+      - 如实告知未找到相关名片
+      - 不编造公司信息或行业数据

@@ -1,0 +1,77 @@
+cases:
+  - id: search-user-expression-calls-search-cards
+    description: 用户说"搜"时必须调 search_cards，不得调 search_target
+    messages:
+      - role: user
+        content: "帮我搜一下做冷链配送的供应商"
+    criteria:
+      - 调用 search_cards，keyword 含"冷链"
+      - 不调用 search_target
+      - 不编造结果，等工具返回后再展示
+
+  - id: search-by-name-calls-search-cards
+    description: 按人名搜索也走 search_cards
+    messages:
+      - role: user
+        content: "帮我查一下李明这个人"
+    criteria:
+      - 调用 search_cards，keyword 含"李明"
+      - 不调用 search_target
+
+  - id: search-target-not-triggered-by-search-keyword
+    description: 用户说"搜公司"不应直接调 search_target
+    messages:
+      - role: user
+        content: "帮我搜一下XX供应链这家公司"
+    criteria:
+      - 调用 search_cards，不调用 search_target
+
+  - id: search-target-only-inside-create-flow
+    description: search_target 仅在创建名片流程中、收集完企业简称和身份类型后由 AI 主动触发
+    messages:
+      - role: user
+        content: "帮我建一张名片"
+      - role: assistant
+        content: "好的，请提供以下信息：姓名、手机号、职位、企业简称、餐饮身份..."
+      - role: user
+        content: "王军，13812345678，采购总监，XX供应链，供应商"
+    criteria:
+      - 调用 search_target，参数含企业简称"XX供应链"和 target_type
+      - 不调用 search_cards
+
+  - id: get-my-card-for-audit-status
+    description: 用户问审核是否通过时调 get_my_card
+    messages:
+      - role: user
+        content: "我的名片过审了吗"
+    criteria:
+      - 调用 get_my_card
+      - 返回结果后以中文展示审核状态
+
+  - id: get-received-cards-for-incoming-requests
+    description: 用户问"有人加我名片吗"时调 get_received_cards
+    messages:
+      - role: user
+        content: "有人加我名片吗"
+    criteria:
+      - 调用 get_received_cards
+      - 不调用 get_delivered_cards
+
+  - id: get-delivered-cards-for-sent-requests
+    description: 用户问发出的请求时调 get_delivered_cards
+    messages:
+      - role: user
+        content: "我发出去的请求有回音吗"
+    criteria:
+      - 调用 get_delivered_cards
+      - 不调用 get_received_cards
+
+  - id: update-card-for-profile-edit
+    description: 用户要改职位时调 update_card
+    messages:
+      - role: user
+        content: "帮我把职位改成总监"
+    criteria:
+      - 先告知用户操作内容及审核影响
+      - 等确认后调用 update_card
+      - 不调用 create_card
